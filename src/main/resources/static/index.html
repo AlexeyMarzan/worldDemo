@@ -96,8 +96,7 @@
 
 
         setInterval(function () {
-            lat = lat + .2;
-            //lo = lo + .1;
+            lat = lat + 1;
             projection.rotate([lat, lo]);
 
 
@@ -115,7 +114,8 @@
                 //console.log('MAP IN:', data);
                 svg.selectAll('.geojson')
                     .style('fill', function (d, i) {
-                        //console.log('MAP:', i, d);
+                        console.log('MAP:', i, d);
+
                         return data[i].value.foreground;
                     })
                     .attr("d", path);

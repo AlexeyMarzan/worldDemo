@@ -14,7 +14,9 @@ public class MapBean {
         return gridSize;
     }
 
-    private double gridSize = 4;
+    private double gridSize = 20;
+    private int width = (int) Math.floor(180/gridSize);
+    private int height = (int) Math.floor(360/gridSize);
 
     private Table<Integer, Integer, Cell> cells;
 
@@ -32,8 +34,6 @@ public class MapBean {
     }
 
     private void initCells() {
-        int width = (int) Math.floor(180/gridSize);
-        int height = (int) Math.floor(360/gridSize);
         List<Integer> rowsTable = new ArrayList<>();
         List<Integer> colsTable = new ArrayList<>();
         for(int i = 0; i < width; i++) {
@@ -50,21 +50,17 @@ public class MapBean {
                 Cell c = new Cell()
                         .withForeground(String.format("rgb(%d,%d,%d)", (int)((double)i/width*256.0), (int)((double)j/height*256.0),0));
                 cells.put(i, j, c);
-                if ((double)i/width <= (90+55)/180 && (double)(i+1)/width > (90+55)/180 && (double)j/height-.5 <=(180+37)/360 && (double)(j+1)/height > (180+37)/360) {
-                    c.setPopulation(17100000);
-                }
                 c.setCondition(1.0);
                 c.setFertile(2.0);
             }
         }
+
+        //Moscow
+        findAt(55,37).setPopulation(17100000);
     }
 
     public Table<Integer, Integer, Cell> getCells() {
         return cells;
-    }
-
-    public void setCells(Table<Integer, Integer, Cell> cells) {
-        this.cells = cells;
     }
 
     public void process() {
@@ -94,4 +90,14 @@ public class MapBean {
         c.setForeground(String.format("rgb(%d,%d,%d)", (int)population%256, (int)population%256, 0));
     }
 
+    /**
+     * Find cell specified point belongs to.
+     * @param longitude
+     * @param latitude
+     */
+    public Cell findAt(double longitude, double latitude) {
+      int x = (((int)Math.floor(longitude/gridSize))+width)%width;
+      int y = (((int)Math.floor(latitude/gridSize))+height)%height;
+      return cells.get(y, x);
+    }
 }

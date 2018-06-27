@@ -25,7 +25,6 @@ public class GridController {
         for (double i = -180; i < 180; i+=step) {
             for (double j = -90+step; j <=  90-step; j += step) {
                 Feature f = new Feature();
-                f.setId("area");
                 f.setProperties(Map.of("longitude", i,"latitude", j));
                 f.setGeometry(new Polygon(
                         new LngLatAlt(i+sp, j+sp),

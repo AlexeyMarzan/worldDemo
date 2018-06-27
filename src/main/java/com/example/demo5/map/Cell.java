@@ -29,6 +29,9 @@ public class Cell {
     public String toString() {
         return MoreObjects.toStringHelper(this)
                 .add("foreground", foreground)
+                .add("population", population)
+                .add("condition", condition)
+                .add("fertile", fertile)
                 .toString();
     }
 
