@@ -1,0 +1,127 @@
+<!DOCTYPE html><html>
+<head>
+    <meta charset="utf-8">
+</head>
+<body>
+    <style>
+
+        .background {
+            fill: #477cc7;
+        }
+
+        .foreground {
+            fill: none;
+            stroke: #333;
+            stroke-width: 1.5px;
+        }
+
+        .graticule {
+            fill: none;
+            stroke: #fff;
+            stroke-width: .5px;
+        }
+
+        .graticule :nth-child(2n) {
+            stroke-dasharray: 2, 2;
+        }
+
+        .land {
+            fill: #cdc7d7;
+            stroke: #4c5ea5;
+        }
+
+        .geojson {
+            fill: none;
+            fill-opacity: 0.7;
+            stroke: black;
+            stroke-width: .5px;
+
+        }
+
+        .boundary {
+            fill: none;
+            stroke: #4c5ea5;
+        }
+
+    </style>
+    <div id='js-rotation-example'></div>
+
+    <script src='https://code.jquery.com/jquery-3.3.1.min.js'></script>
+    <script src="http://d3js.org/d3.v5.min.js"></script>
+    <script src="http://d3js.org/topojson.v0.min.js"></script>
+    <script src="example.js"></script>
+
+    <script>
+        var orto = true;
+        var width = $(window).width(),
+            height = $(window).height();
+
+        var sc = Math.min(width, height) * (orto ? 0.5:0.7);
+        var lat = -180;
+        var lo = 0;
+        var projection = (orto ? d3.geoOrthographic() : d3.geoMercator())
+            .scale(sc)
+            .translate([width / 2, height / 2])
+            .rotate([lat, 0])
+            .clipAngle(90);
+
+        var path = d3.geoPath(projection);
+
+        var svg = d3.select("#js-rotation-example")
+            .append("svg")
+            .attr("width", width-10)
+            .attr("height", height-10);
+
+        if (orto)
+            svg.append("circle").attr("cx", width / 2).attr("cy", height / 2).attr("r", sc + 1).style("fill", "#477cc7");
+
+
+        svg.selectAll(".land")
+            .data([topojson.object(worldtopo, worldtopo.objects.land)])
+            .enter().append('path')
+            .attr('class', 'land')
+            .attr("d", path);
+
+        d3.json('/grid').then(function(featureCollection) {
+            grid = svg.selectAll('.geojson').data(featureCollection.features, function(d, i) {
+                //console.log('Feature ', i, d);
+            }).enter()
+                .append('path')
+                .attr("class",'geojson')
+                .attr("d", function(d,i) {
+                    //console.log("GRID:", i, ' -- ', d);
+                    return path(d,i);
+                });
+        });
+
+
+        setInterval(function () {
+            lat = lat + .2;
+            //lo = lo + .1;
+            projection.rotate([lat, lo]);
+
+
+            svg.selectAll(".land")
+                .attr("d", path);
+
+            svg.selectAll(".geojson")
+                .attr("d", path);
+
+
+        }, 10);
+
+        setInterval(function () {
+            d3.json('/map').then(function (data) {
+                //console.log('MAP IN:', data);
+                svg.selectAll('.geojson')
+                    .style('fill', function (d, i) {
+                        //console.log('MAP:', i, d);
+                        return data[i].value.foreground;
+                    })
+                    .attr("d", path);
+            });
+        }, 5000);
+
+
+    </script>
+</body></html>
