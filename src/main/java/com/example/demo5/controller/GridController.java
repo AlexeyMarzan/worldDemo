@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.HashMap;
 import java.util.Map;
 
 @RequestMapping("/grid")
@@ -25,7 +26,10 @@ public class GridController {
         for (double i = -180+sp; i < 180; i+=step) {
             for (double j = -90+sp; j <  90-sp; j += step) {
                 Feature f = new Feature();
-                f.setProperties(Map.of("longitude", i,"latitude", j));
+                Map<String, Object> properties = new HashMap<>();
+                properties.put("longitude", i);
+                properties.put("latitude", j);
+                f.setProperties(properties);
                 f.setGeometry(new Polygon(
                         new LngLatAlt(i+sp, j+sp),
                         new LngLatAlt(i+sp, j-sp),

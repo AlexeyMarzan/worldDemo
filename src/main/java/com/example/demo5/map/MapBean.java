@@ -1,8 +1,8 @@
 package com.example.demo5.map;
 
+import com.google.common.collect.ArrayTable;
 import com.google.common.collect.Table;
 import org.springframework.stereotype.Component;
-import com.google.common.collect.ArrayTable;
 
 import java.util.ArrayList;
 import java.util.List;
