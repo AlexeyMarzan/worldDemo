@@ -21,9 +21,9 @@ public class GridController {
     public GeoJsonObject getGrid() {
         FeatureCollection mpl = new FeatureCollection();
         double step = map.getGridSize();
-        double sp = step/2.0 - .1;
-        for (double i = -180; i < 180; i+=step) {
-            for (double j = -90+step; j <=  90-step; j += step) {
+        double sp = step/2;
+        for (double i = -180+sp; i < 180; i+=step) {
+            for (double j = -90+sp; j <  90-sp; j += step) {
                 Feature f = new Feature();
                 f.setProperties(Map.of("longitude", i,"latitude", j));
                 f.setGeometry(new Polygon(

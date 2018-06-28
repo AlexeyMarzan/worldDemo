@@ -3,47 +3,7 @@
     <meta charset="utf-8">
 </head>
 <body>
-    <style>
-
-        .background {
-            fill: #477cc7;
-        }
-
-        .foreground {
-            fill: none;
-            stroke: #333;
-            stroke-width: 1.5px;
-        }
-
-        .graticule {
-            fill: none;
-            stroke: #fff;
-            stroke-width: .5px;
-        }
-
-        .graticule :nth-child(2n) {
-            stroke-dasharray: 2, 2;
-        }
-
-        .land {
-            fill: #cdc7d7;
-            stroke: #4c5ea5;
-        }
-
-        .geojson {
-            fill: none;
-            fill-opacity: 0.7;
-            stroke: black;
-            stroke-width: .5px;
-
-        }
-
-        .boundary {
-            fill: none;
-            stroke: #4c5ea5;
-        }
-
-    </style>
+    <link rel="stylesheet" type="text/css" href="mystyles.css" media="screen" />
     <div id='js-rotation-example'></div>
 
     <script src='https://code.jquery.com/jquery-3.3.1.min.js'></script>
@@ -56,21 +16,21 @@
         var width = $(window).width(),
             height = $(window).height();
 
-        var sc = Math.min(width, height) * (orto ? 0.5:0.7);
-        var lat = -180;
-        var lo = 0;
+        var sc = Math.min(width, height) * (orto ? 0.4:0.5);
+        var lat = 0;
+        var lo = -23.5;
         var projection = (orto ? d3.geoOrthographic() : d3.geoMercator())
             .scale(sc)
             .translate([width / 2, height / 2])
-            .rotate([lat, 0])
+            .rotate([lat, lo])
             .clipAngle(90);
 
         var path = d3.geoPath(projection);
 
         var svg = d3.select("#js-rotation-example")
             .append("svg")
-            .attr("width", width-10)
-            .attr("height", height-10);
+            .attr("width", width-20)
+            .attr("height", height-20);
 
         if (orto)
             svg.append("circle").attr("cx", width / 2).attr("cy", height / 2).attr("r", sc + 1).style("fill", "#477cc7");
@@ -96,7 +56,7 @@
 
 
         setInterval(function () {
-            lat = lat + 1;
+            lat = lat + 0.1;
             projection.rotate([lat, lo]);
 
 
@@ -107,16 +67,26 @@
                 .attr("d", path);
 
 
-        }, 10);
+        }, 100);
 
         setInterval(function () {
             d3.json('/map').then(function (data) {
                 //console.log('MAP IN:', data);
                 svg.selectAll('.geojson')
                     .style('fill', function (d, i) {
-                        console.log('MAP:', i, d);
-
-                        return data[i].value.foreground;
+                        //console.log('MAP:', i, d);
+                        var found = null;
+                        data.forEach(function(entry) {
+                            if (Math.abs(entry.longitude-d.properties.longitude)<4 && Math.abs(entry.latitude-d.properties.latitude)<4) // TODO Учесть gridSize
+                                //console.log("MATCH: ", i,d,entry)
+                                found = entry.foreground;
+                        });
+                        if (found != null) {
+                            return found;
+                        } else {
+                            //console.log("MAP: ", i, d, data)
+                            return 'none';
+                        }
                     })
                     .attr("d", path);
             });

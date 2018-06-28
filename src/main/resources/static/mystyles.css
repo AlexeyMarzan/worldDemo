@@ -1,0 +1,37 @@
+.background {
+    fill: #477cc7;
+}
+
+.foreground {
+    fill: none;
+    stroke: #333;
+    stroke-width: 1.5px;
+}
+
+.graticule {
+    fill: none;
+    stroke: #fff;
+    stroke-width: .5px;
+}
+
+.graticule :nth-child(2n) {
+    stroke-dasharray: 2, 2;
+}
+
+.land {
+    fill: #cdc7d7;
+    stroke: #4c5ea5;
+}
+
+.geojson {
+    fill: none;
+    fill-opacity: 0.7;
+    stroke: black;
+    stroke-width: .1px;
+
+}
+
+.boundary {
+    fill: none;
+    stroke: #4c5ea5;
+}
