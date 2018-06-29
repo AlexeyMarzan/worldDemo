@@ -17,12 +17,21 @@ public class World {
         return gridSize;
     }
 
-    private int gridSize = 10; // размер ячеек в градусах
+    private int gridSize; // размер ячеек в градусах
     private Time time;
 
     private Table<Integer, Integer, Area> cells;
 
     public World() {
+        this(10);
+    }
+
+    public World(int gridSize) {
+        init(gridSize);
+    }
+
+    public void init(int gridSize) {
+        this.gridSize = gridSize;
         time = new Time();
         initCells();
         new java.util.Timer().scheduleAtFixedRate(
