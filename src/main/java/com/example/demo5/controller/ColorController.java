@@ -1,6 +1,6 @@
 package com.example.demo5.controller;
 
-import com.example.demo5.map.CellDTO;
+import com.example.demo5.dto.AreaDTO;
 import com.example.demo5.map.MapBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -20,11 +20,11 @@ public class ColorController {
 
     @RequestMapping(method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
     public Serializable getColorMap() {
-        List<CellDTO> list = new ArrayList<>();
+        List<AreaDTO> list = new ArrayList<>();
         for (Integer longitude: map.getCells().rowKeySet()) {
             for (Integer latitude: map.getCells().row(longitude).keySet()) {
                 try {
-                    CellDTO cell = new CellDTO(map.getCells().get(longitude, latitude));
+                    AreaDTO cell = new AreaDTO(map.getCells().get(longitude, latitude));
                     cell.setLatitude(latitude);
                     cell.setLongitude(longitude);
                     list.add(cell);

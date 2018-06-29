@@ -1,17 +1,19 @@
-package com.example.demo5.map;
+package com.example.demo5.dto;
+
+import com.example.demo5.map.Area;
 
 import java.io.Serializable;
 
-public class CellDTO implements Serializable {
+public class AreaDTO implements Serializable {
     private int longitude;
     private int latitude;
     private String foreground;
 
-    public CellDTO() {
+    public AreaDTO() {
     }
 
-    public CellDTO(final Cell cell) {
-        setForeground(cell.getForeground());
+    public AreaDTO(final Area area) {
+        setForeground(area.getForeground());
     }
 
     public int getLongitude() {

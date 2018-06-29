@@ -17,7 +17,7 @@ public class MapBean {
     private int width = (int) Math.floor(180/gridSize);
     private int height = (int) Math.floor(360/gridSize);
 
-    private Table<Integer, Integer, Cell> cells;
+    private Table<Integer, Integer, Area> cells;
 
     public MapBean() {
         initCells();
@@ -49,7 +49,7 @@ public class MapBean {
 
         for (Integer longitude: cells.rowKeySet()) {
             for (Integer latitude: cells.row(longitude).keySet()) {
-                final Cell c = new Cell();
+                final Area c = new Area();
                 c.setCondition(1.0);
                 c.setFertile(2.0);
                 c.setForeground(String.format("rgb(%d,%d,%d)", (int)((double)longitude/width*256.0), (int)((double)latitude/height*256.0),0));
@@ -61,7 +61,7 @@ public class MapBean {
         findCell(55,37).setPopulation(17100000);
     }
 
-    public Table<Integer, Integer, Cell> getCells() {
+    public Table<Integer, Integer, Area> getCells() {
         return cells;
     }
 
@@ -73,7 +73,7 @@ public class MapBean {
         Location location = findLongLat((int) (Math.random()*360-180), (int) (Math.random()*180-90));
         // loop neighbours
         double population = 0;
-        Cell c;
+        Area c;
         for (int i = -1; i<=1; i++) {
             int longitude = location.getLongitude()+i*getGridSize();
             for (int j = -1; j <= 1; j++) {
@@ -99,7 +99,7 @@ public class MapBean {
     /**
      * Find cell specified point belongs to.
      */
-    public Cell findCell(double longitude, double latitude) {
+    public Area findCell(double longitude, double latitude) {
         Location coord = findLongLat(longitude, latitude);
         return cells.get(coord.getLongitude(), coord.getLatitude());
     }

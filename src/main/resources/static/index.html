@@ -33,10 +33,14 @@
             .attr("height", height-20);
 
         if (orto)
-            svg.append("circle").attr("cx", width / 2).attr("cy", height / 2).attr("r", sc + 1).style("fill", "#477cc7");
+            svg.append('path')
+                .datum({type: 'Sphere'})
+                .attr('class', 'water')
+                .attr('d', path);
 
+                //.attr("cx", width / 2).attr("cy", height / 2).attr("r", sc + 1).style("fill", "#477cc7");
 
-        svg.selectAll(".land")
+        svg.selectAll('.land')
             .data([topojson.object(worldtopo, worldtopo.objects.land)])
             .enter().append('path')
             .attr('class', 'land')
@@ -47,11 +51,16 @@
                 //console.log('Feature ', i, d);
             }).enter()
                 .append('path')
-                .attr("class",'geojson')
-                .attr("d", function(d,i) {
-                    //console.log("GRID:", i, ' -- ', d);
-                    return path(d,i);
-                });
+                .attr('class','geojson')
+                .attr('d', path);
+
+            /*
+            // mouse events
+            grid
+                .on('mouseover', function(d, i) {
+                    console.log('mouseover d[i]', d, i, grid[i]);
+                    //grid[i].style('fill-opacity', 1);
+                })*/
         });
 
 
@@ -88,10 +97,34 @@
                             return 'none';
                         }
                     })
-                    .attr("d", path);
+                    .attr("d", path)
+                    .call(d3.drag().on("start", started));
+
             });
         }, 5000);
 
+        // inspired by http://bl.ocks.org/KoGor/5994804
+        function started(d) {
+            console.log("STARTED ", d);
+
+            //Globe rotating
+
+            (function transition() {
+                d3.transition()
+                    .duration(1500)
+                    .tween("rotate", function() {
+                        var r = d3.interpolate(projection.rotate(), [-d.properties.longitude, -d.properties.latitude]);
+                        return function(t) {
+                            projection.rotate(r(t));
+                            svg.selectAll("path").attr("d", path);
+
+                            // setup lat, lo for rotation timer function
+                            lat = projection.rotate()[0];
+                            lo = projection.rotate()[1];
+                        };
+                    })
+            })();
+        }
 
     </script>
 </body></html>

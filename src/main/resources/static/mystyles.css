@@ -23,12 +23,20 @@
     stroke: #4c5ea5;
 }
 
+.water {
+    fill: #477cc7;
+}
+
 .geojson {
     fill: none;
     fill-opacity: 0.7;
     stroke: black;
     stroke-width: .1px;
 
+}
+.geojson:hover {
+    stroke: white;
+    fill-opacity: 1;
 }
 
 .boundary {

@@ -2,13 +2,13 @@ package com.example.demo5.map;
 
 import com.google.common.base.MoreObjects;
 
-public class Cell {
+public class Area {
     private String foreground;
     private double population;
     private double condition; // условия обитания 0 - плохие; 1 - великолепные
     private double fertile; // фертильность популяции на 1 особь
 
-    public Cell() {
+    public Area() {
         population = 0.0;
     }
 
@@ -20,7 +20,7 @@ public class Cell {
         this.foreground = foreground;
     }
 
-    public Cell withForeground(String i) {
+    public Area withForeground(String i) {
         setForeground(i);
         return this;
     }
