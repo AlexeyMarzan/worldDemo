@@ -7,9 +7,11 @@ public class Area {
     private double population;
     private double condition; // условия обитания 0 - плохие; 1 - великолепные
     private double fertile; // фертильность популяции на 1 особь
+    private boolean updated; // true, if the area has updated values
 
     public Area() {
         population = 0.0;
+        updated = true;
     }
 
     public String getForeground() {
@@ -18,11 +20,7 @@ public class Area {
 
     public void setForeground(String foreground) {
         this.foreground = foreground;
-    }
-
-    public Area withForeground(String i) {
-        setForeground(i);
-        return this;
+        setUpdated();
     }
 
     @Override
@@ -41,6 +39,7 @@ public class Area {
 
     public void setPopulation(double population) {
         this.population = population;
+        setUpdated();
     }
 
     public double getCondition() {
@@ -49,6 +48,7 @@ public class Area {
 
     public void setCondition(double condition) {
         this.condition = condition;
+        setUpdated();
     }
 
     public double getFertile() {
@@ -57,5 +57,18 @@ public class Area {
 
     public void setFertile(double fertile) {
         this.fertile = fertile;
+        setUpdated();
+    }
+
+    public boolean isUpdated() {
+        return updated;
+    }
+
+    private void setUpdated() {
+        updated = true;
+    }
+
+    public void clearUpdated() {
+        updated = false;
     }
 }

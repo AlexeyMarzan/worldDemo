@@ -68,18 +68,13 @@
             lat = lat + 0.1;
             projection.rotate([lat, lo]);
 
-
-            svg.selectAll(".land")
+            svg.selectAll('path')
                 .attr("d", path);
-
-            svg.selectAll(".geojson")
-                .attr("d", path);
-
 
         }, 100);
 
         setInterval(function () {
-            d3.json('/map').then(function (data) {
+            d3.json('/map/updates').then(function (data) {
                 //console.log('MAP IN:', data);
                 svg.selectAll('.geojson')
                     .style('fill', function (d, i) {
@@ -94,14 +89,14 @@
                             return found;
                         } else {
                             //console.log("MAP: ", i, d, data)
-                            return 'none';
+                            return this.style.fill;
                         }
                     })
                     .attr("d", path)
                     .call(d3.drag().on("start", started));
 
             });
-        }, 5000);
+        }, 10);
 
         // inspired by http://bl.ocks.org/KoGor/5994804
         function started(d) {
