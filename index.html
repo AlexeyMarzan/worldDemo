@@ -1,0 +1,145 @@
+<!DOCTYPE html><html>
+<head>
+    <meta charset="utf-8">
+</head>
+<body>
+    <link rel="stylesheet" type="text/css" href="mystyles.css" media="screen" />
+    <div id='js-rotation-example'></div>
+
+    <script src='https://code.jquery.com/jquery-3.3.1.min.js'></script>
+    <script src="http://d3js.org/d3.v5.min.js"></script>
+    <script src="http://d3js.org/topojson.v0.min.js"></script>
+    <script src="example.js"></script>
+
+    <script>
+        var orto = true;
+        var width = $(window).width(),
+            height = $(window).height();
+
+        var sc = Math.min(width, height) * (orto ? 0.4:0.5);
+        var lat = 0;
+        var lo = -23.5;
+        var projection = (orto ? d3.geoOrthographic() : d3.geoMercator())
+            .scale(sc)
+            .translate([width / 2, height / 2])
+            .rotate([lat, lo])
+            .clipAngle(90);
+
+        var path = d3.geoPath(projection);
+
+        var svg = d3.select("#js-rotation-example")
+            .append("svg")
+            .attr("width", width-20)
+            .attr("height", height-20)
+            .on('wheel', function() {
+                console.log("WHEEL");
+                if (d3.event.deltaY > 0)
+                    sc = sc/1.1;
+                else
+                    sc = sc*1.1;
+                projection = (orto ? d3.geoOrthographic() : d3.geoMercator())
+                    .scale(sc)
+                    .translate([width / 2, height / 2])
+                    .rotate([lat, lo])
+                    .clipAngle(90);
+
+                path = d3.geoPath(projection);
+                svg.selectAll('path')
+                    .attr("d", path);
+            });
+
+        if (orto)
+            svg.append('path')
+                .datum({type: 'Sphere'})
+                .attr('class', 'water')
+                .attr('d', path);
+
+        svg.selectAll('.land')
+            .data([topojson.object(worldtopo, worldtopo.objects.land)])
+            .enter().append('path')
+            .attr('class', 'land')
+            .attr("d", path);
+
+        d3.json('/grid').then(function(featureCollection) {
+            grid = svg.selectAll('.geojson').data(featureCollection.features, function(d, i) {
+                //console.log('Feature ', i, d);
+            }).enter()
+                .append('path')
+                .attr('class','geojson')
+                .attr('d', path);
+
+        });
+
+
+        setInterval(function () {
+            lat = lat + 0.1;
+            projection.rotate([lat, lo]);
+
+            svg.selectAll('path')
+                .attr("d", path);
+
+        }, 100);
+
+        setInterval(function () {
+            d3.json('/map/updates').then(function (data) {
+                //console.log('MAP IN:', data);
+                svg.selectAll('.geojson')
+                    .style('fill', function (d, i) {
+                        //console.log('MAP:', i, d);
+                        var found = null;
+                        data.forEach(function(entry) {
+                            if (Math.abs(entry.longitude-d.properties.longitude)<4 && Math.abs(entry.latitude-d.properties.latitude)<4) // TODO Учесть gridSize
+                                //console.log("MATCH: ", i,d,entry)
+                                found = entry.foreground;
+                        });
+                        if (found != null) {
+                            return found;
+                        } else {
+                            //console.log("MAP: ", i, d, data)
+                            return this.style.fill;
+                        }
+                    })
+                    .attr("d", path)
+                    .call(d3.drag().on("start", started))
+                    .on('dblclick', function(d) {
+                        console.log("DBL CLICK ", d);
+                        orto = !orto;
+                        sc = Math.min(width, height) * (orto ? 0.4:0.5);
+                        projection = (orto ? d3.geoOrthographic() : d3.geoMercator())
+                            .scale(sc)
+                            .translate([width / 2, height / 2])
+                            .rotate([lat, lo])
+                            .clipAngle(90);
+
+                        path = d3.geoPath(projection);
+                        svg.selectAll('path')
+                            .attr("d", path);
+                    })
+            });
+        }, 10);
+
+        // inspired by http://bl.ocks.org/KoGor/5994804
+        function started(d) {
+            console.log("STARTED ", d);
+
+            //Globe rotating
+
+            (function transition() {
+                d3.transition()
+                    .duration(1500)
+                    .tween("rotate", function() {
+                        var r = d3.interpolate(projection.rotate(), [-d.properties.longitude, -d.properties.latitude]);
+                        return function(t) {
+                            projection.rotate(r(t));
+                            svg.selectAll("path").attr("d", path);
+
+                            // setup lat, lo for rotation timer function
+                            lat = projection.rotate()[0];
+                            lo = projection.rotate()[1];
+                        };
+                    })
+            })();
+        }
+
+    </script>
+</body></html>
