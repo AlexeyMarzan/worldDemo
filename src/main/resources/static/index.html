@@ -54,8 +54,6 @@
                 .attr('class', 'water')
                 .attr('d', path);
 
-                //.attr("cx", width / 2).attr("cy", height / 2).attr("r", sc + 1).style("fill", "#477cc7");
-
         svg.selectAll('.land')
             .data([topojson.object(worldtopo, worldtopo.objects.land)])
             .enter().append('path')
@@ -70,13 +68,6 @@
                 .attr('class','geojson')
                 .attr('d', path);
 
-            /*
-            // mouse events
-            grid
-                .on('mouseover', function(d, i) {
-                    console.log('mouseover d[i]', d, i, grid[i]);
-                    //grid[i].style('fill-opacity', 1);
-                })*/
         });
 
 
