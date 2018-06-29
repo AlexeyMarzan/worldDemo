@@ -13,6 +13,7 @@ public class Area {
 
     public Area() {
         population = 0.0;
+        condition = 1.0;
         updated = true;
     }
 
@@ -26,10 +27,12 @@ public class Area {
 
     @Override
     public String toString() {
-        return MoreObjects.toStringHelper(this)
-                .add("population", population)
-                .add("condition", condition)
-                .toString();
+        return "Area{" +
+                "population=" + population +
+                ", condition=" + condition +
+                ", updated=" + updated +
+                ", time=" + time +
+                '}';
     }
 
     public double getPopulation() {
@@ -38,7 +41,6 @@ public class Area {
 
     public void setPopulation(double population) {
         this.population = population;
-        setCondition(condition);
         setUpdated();
     }
 

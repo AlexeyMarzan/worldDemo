@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
 
 import static com.example.demo5.population.Population.MAX_POP;
 
@@ -19,6 +20,7 @@ public class World {
 
     private int gridSize; // размер ячеек в градусах
     private Time time;
+    private Timer timer;
 
     private Table<Integer, Integer, Area> cells;
 
@@ -32,9 +34,14 @@ public class World {
 
     public void init(int gridSize) {
         this.gridSize = gridSize;
-        time = new Time();
+        this.time = new Time();
         initCells();
-        new java.util.Timer().scheduleAtFixedRate(
+        if (timer != null) {
+            timer.cancel();
+        } else {
+            this.timer = new Timer();
+        }
+        timer.scheduleAtFixedRate(
                 new java.util.TimerTask() {
                     @Override
                     public void run() {
@@ -62,10 +69,7 @@ public class World {
 
         for (Integer longitude: cells.rowKeySet()) {
             for (Integer latitude: cells.row(longitude).keySet()) {
-                final Area c = new Area();
-                c.setCondition(1.0);
-                c.setTime(time);
-                cells.put(longitude, latitude, c);
+                cells.put(longitude, latitude, new Area());
             }
         }
 
@@ -91,10 +95,8 @@ public class World {
         double population = 0;
         int areaCount = 0;
         Area c;
-        for (int i = -1; i<=1; i++) {
-            int longitude = point.getLongitude()+i*getGridSize();
-            for (int j = -1; j <= 1; j++) {
-                int latitude = point.getLatitude()+j*getGridSize();
+        for (int i = -1, longitude = point.getLongitude(); i<=1; i++,longitude+=gridSize) {
+            for (int j = -1, latitude = point.getLatitude(); j <= 1; j++, latitude+=gridSize ) {
                 c = findCell(longitude, latitude);
                 if (c != null) {
                     population += c.getPopulation();
