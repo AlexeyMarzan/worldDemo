@@ -1,10 +1,10 @@
 package com.example.demo5.map;
 
-public class Location {
+public class Point {
     private final Integer longitude;
     private final Integer latitude;
 
-    public Location(Integer longitude, Integer latitude) {
+    public Point(Integer longitude, Integer latitude) {
         this.longitude = longitude;
         this.latitude = latitude;
     }

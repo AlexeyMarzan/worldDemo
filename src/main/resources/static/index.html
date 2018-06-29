@@ -30,7 +30,23 @@
         var svg = d3.select("#js-rotation-example")
             .append("svg")
             .attr("width", width-20)
-            .attr("height", height-20);
+            .attr("height", height-20)
+            .on('wheel', function() {
+                console.log("WHEEL");
+                if (d3.event.deltaY > 0)
+                    sc = sc/1.1;
+                else
+                    sc = sc*1.1;
+                projection = (orto ? d3.geoOrthographic() : d3.geoMercator())
+                    .scale(sc)
+                    .translate([width / 2, height / 2])
+                    .rotate([lat, lo])
+                    .clipAngle(90);
+
+                path = d3.geoPath(projection);
+                svg.selectAll('path')
+                    .attr("d", path);
+            });
 
         if (orto)
             svg.append('path')
@@ -93,8 +109,21 @@
                         }
                     })
                     .attr("d", path)
-                    .call(d3.drag().on("start", started));
+                    .call(d3.drag().on("start", started))
+                    .on('dblclick', function(d) {
+                        console.log("DBL CLICK ", d);
+                        orto = !orto;
+                        sc = Math.min(width, height) * (orto ? 0.4:0.5);
+                        projection = (orto ? d3.geoOrthographic() : d3.geoMercator())
+                            .scale(sc)
+                            .translate([width / 2, height / 2])
+                            .rotate([lat, lo])
+                            .clipAngle(90);
 
+                        path = d3.geoPath(projection);
+                        svg.selectAll('path')
+                            .attr("d", path);
+                    })
             });
         }, 10);
 

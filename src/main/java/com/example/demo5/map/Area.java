@@ -1,13 +1,15 @@
 package com.example.demo5.map;
 
+import com.example.demo5.Time;
 import com.google.common.base.MoreObjects;
 
+import static com.example.demo5.population.Population.MAX_POP;
+
 public class Area {
-    private String foreground;
     private double population;
     private double condition; // условия обитания 0 - плохие; 1 - великолепные
-    private double fertile; // фертильность популяции на 1 особь
     private boolean updated; // true, if the area has updated values
+    private Time time; // when the area has updated last time
 
     public Area() {
         population = 0.0;
@@ -15,21 +17,18 @@ public class Area {
     }
 
     public String getForeground() {
-        return foreground;
-    }
+        int r = (int)(255 * (1 - population/MAX_POP));
+        int g = (int)(255 * condition);
+        int b = 0;
 
-    public void setForeground(String foreground) {
-        this.foreground = foreground;
-        setUpdated();
+        return String.format("rgb(%d,%d,%d)", r, g, b);
     }
 
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                .add("foreground", foreground)
                 .add("population", population)
                 .add("condition", condition)
-                .add("fertile", fertile)
                 .toString();
     }
 
@@ -39,6 +38,7 @@ public class Area {
 
     public void setPopulation(double population) {
         this.population = population;
+        setCondition(condition);
         setUpdated();
     }
 
@@ -48,15 +48,6 @@ public class Area {
 
     public void setCondition(double condition) {
         this.condition = condition;
-        setUpdated();
-    }
-
-    public double getFertile() {
-        return fertile;
-    }
-
-    public void setFertile(double fertile) {
-        this.fertile = fertile;
         setUpdated();
     }
 
@@ -70,5 +61,13 @@ public class Area {
 
     public void clearUpdated() {
         updated = false;
+    }
+
+    public Time getTime() {
+        return time;
+    }
+
+    public void setTime(Time time) {
+        this.time = new Time(time);
     }
 }

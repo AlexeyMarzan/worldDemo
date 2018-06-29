@@ -2,7 +2,7 @@ package com.example.demo5.controller;
 
 import com.example.demo5.dto.AreaDTO;
 import com.example.demo5.map.Area;
-import com.example.demo5.map.MapBean;
+import com.example.demo5.map.World;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,7 +17,7 @@ import java.util.List;
 @RestController
 public class ColorController {
     @Autowired
-    private MapBean map;
+    private World map;
 
     @RequestMapping(method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
     public Serializable getColorMap() {

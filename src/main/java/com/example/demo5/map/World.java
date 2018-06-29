@@ -1,5 +1,7 @@
 package com.example.demo5.map;
 
+import com.example.demo5.Time;
+import com.example.demo5.population.Population;
 import com.google.common.collect.ArrayTable;
 import com.google.common.collect.Table;
 import org.springframework.stereotype.Component;
@@ -7,19 +9,21 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.example.demo5.population.Population.MAX_POP;
+
 @Component
-public class MapBean {
+public class World {
     public int getGridSize() {
         return gridSize;
     }
 
-    private int gridSize = 5; // размер ячеек в градусах
-    private int width = (int) Math.floor(180/gridSize);
-    private int height = (int) Math.floor(360/gridSize);
+    private int gridSize = 10; // размер ячеек в градусах
+    private Time time;
 
     private Table<Integer, Integer, Area> cells;
 
-    public MapBean() {
+    public World() {
+        time = new Time();
         initCells();
         new java.util.Timer().scheduleAtFixedRate(
                 new java.util.TimerTask() {
@@ -28,7 +32,7 @@ public class MapBean {
                         process();
                     }
                 },
-                5000,10
+                5000,100
         );
     }
 
@@ -51,65 +55,72 @@ public class MapBean {
             for (Integer latitude: cells.row(longitude).keySet()) {
                 final Area c = new Area();
                 c.setCondition(1.0);
-                c.setFertile(2.0);
-                c.setForeground(String.format("rgb(%d,%d,%d)", (int)((double)longitude/width*256.0), (int)((double)latitude/height*256.0),0));
+                c.setTime(time);
                 cells.put(longitude, latitude, c);
             }
         }
 
         //Moscow
-        findCell(55,37).setPopulation(17100000);
+        findCell(37,55).setPopulation(MAX_POP);
     }
 
     public Table<Integer, Integer, Area> getCells() {
         return cells;
     }
 
+    /**
+     * Get random area and perform one calculation step
+     */
     public void process() {
-        final long MAX_POP=17100000;
-        int width = cells.columnKeySet().size();
-        int height = cells.rowKeySet().size();
+        time.increase();
+        if (time.getTime()%1000 == 0) {
+            System.out.println("=== TIME "+time.getTime() + " ===");
+        }
 
-        Location location = findLongLat((int) (Math.random()*360-180), (int) (Math.random()*180-90));
+        final Point point = findLongLat((int) (Math.random()*360-180), (int) (Math.random()*180-90));
         // loop neighbours
         double population = 0;
+        int areaCount = 0;
         Area c;
         for (int i = -1; i<=1; i++) {
-            int longitude = location.getLongitude()+i*getGridSize();
+            int longitude = point.getLongitude()+i*getGridSize();
             for (int j = -1; j <= 1; j++) {
-                int latitude = location.getLatitude()+j*getGridSize();
+                int latitude = point.getLatitude()+j*getGridSize();
                 c = findCell(longitude, latitude);
                 if (c != null) {
                     population += c.getPopulation();
+                    areaCount++;
                 } else {
                     System.out.println("No CELL[" + longitude + "," + latitude + "]");
                 }
             }
         }
-        c = cells.get(location.getLongitude(),location.getLatitude());
-        population = population/9.0*c.getCondition()*c.getFertile();
+        c = cells.get(point.getLongitude(), point.getLatitude());
+
+        population = population/areaCount*c.getCondition()*Population.getFertile();
+        double condition = c.getCondition();
+        condition *= 1 - population/MAX_POP;
+        c.setCondition(condition);
         c.setPopulation(population);
-        population = population/MAX_POP;
-        int r = (int)(0 * population + 255 * (1 - population));
-        int g = (int)(255 * population + 0 * (1 - population));
-        int b = 0;
-        c.setForeground(String.format("rgb(%d,%d,%d)", r, g, b));
+        c.setTime(time);
     }
 
     /**
-     * Find cell specified point belongs to.
+     * Find nearest area specified point belongs to.
      */
     public Area findCell(double longitude, double latitude) {
-        Location coord = findLongLat(longitude, latitude);
+        Point coord = findLongLat(longitude, latitude);
         return cells.get(coord.getLongitude(), coord.getLatitude());
     }
 
     /**
-     * Find cell coordinates specified point belongs to.
+     * Find nearest area coordinates specified point belongs to.
      */
-    public Location findLongLat(double longitude, double latitude) {
+    public Point findLongLat(double longitude, double latitude) {
         Double minDist2 = null;
         Integer minX=null, minY=null;
+
+        // TODO: write better search to avoid O(n^2) complexity.
         for (Integer x: cells.rowKeySet()) {
             for (Integer y: cells.row(x).keySet()) {
                 double dist2 = (longitude-x)*(longitude-x)+(latitude-y)*(latitude-y);
@@ -121,6 +132,10 @@ public class MapBean {
             }
         }
 
-        return new Location(minX, minY);
+        return new Point(minX, minY);
+    }
+
+    public Time getTime() {
+        return time;
     }
 }

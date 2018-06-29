@@ -1,6 +1,6 @@
 package com.example.demo5.controller;
 
-import com.example.demo5.map.MapBean;
+import com.example.demo5.map.World;
 import org.geojson.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -16,7 +16,7 @@ import java.util.Map;
 public class GridController {
 
     @Autowired
-    private MapBean map;
+    private World map;
 
     @RequestMapping(method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
     public GeoJsonObject getGrid() {
