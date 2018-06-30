@@ -1,8 +1,8 @@
 package com.example.demo5.map;
 
 public class Point {
-    private final Integer longitude;
-    private final Integer latitude;
+    private final int longitude;
+    private final int latitude;
 
     public Point(Integer longitude, Integer latitude) {
         this.longitude = longitude;

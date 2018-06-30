@@ -22,15 +22,15 @@ public class ColorController {
     @RequestMapping(method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
     public Serializable getColorMap() {
         List<AreaDTO> list = new ArrayList<>();
-        for (Integer longitude: map.getCells().rowKeySet()) {
-            for (Integer latitude: map.getCells().row(longitude).keySet()) {
+        for (Integer longitude : map.getCells().rowKeySet()) {
+            for (Integer latitude : map.getCells().row(longitude).keySet()) {
                 try {
                     AreaDTO cell = new AreaDTO(map.getCells().get(longitude, latitude));
                     cell.setLatitude(latitude);
                     cell.setLongitude(longitude);
                     list.add(cell);
                 } catch (Exception e) {
-                    System.out.println("Problem getting cell["+longitude+","+latitude+"]");
+                    System.out.println("Problem getting cell[" + longitude + "," + latitude + "]");
                 }
             }
 
@@ -42,8 +42,8 @@ public class ColorController {
     @RequestMapping(path = "/updates", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
     public Serializable getColorMapUpdates() {
         List<AreaDTO> list = new ArrayList<>();
-        for (Integer longitude: map.getCells().rowKeySet()) {
-            for (Integer latitude: map.getCells().row(longitude).keySet()) {
+        for (Integer longitude : map.getCells().rowKeySet()) {
+            for (Integer latitude : map.getCells().row(longitude).keySet()) {
                 try {
                     Area area = map.getCells().get(longitude, latitude);
                     if (area.isUpdated()) {
@@ -54,7 +54,7 @@ public class ColorController {
                         area.clearUpdated();
                     }
                 } catch (Exception e) {
-                    System.out.println("Problem getting cell["+longitude+","+latitude+"]");
+                    System.out.println("Problem getting cell[" + longitude + "," + latitude + "]");
                 }
             }
         }

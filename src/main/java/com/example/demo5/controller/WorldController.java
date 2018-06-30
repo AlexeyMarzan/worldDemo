@@ -14,9 +14,10 @@ public class WorldController {
     @Autowired
     World world;
 
-    @RequestMapping(path ="/{grid}", method = RequestMethod.GET)
-    public RedirectView setWorld (@PathVariable("grid") int grid) {
+    @RequestMapping(path = "/{grid}", method = RequestMethod.GET)
+    public RedirectView setWorld(@PathVariable("grid") int grid) {
         world.init(grid);
+
         RedirectView redirectView = new RedirectView();
         redirectView.setUrl("/");
         return redirectView;

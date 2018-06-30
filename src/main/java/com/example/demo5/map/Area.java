@@ -1,25 +1,24 @@
 package com.example.demo5.map;
 
 import com.example.demo5.Time;
-import com.google.common.base.MoreObjects;
 
 import static com.example.demo5.population.Population.MAX_POP;
 
 public class Area {
-    private double population;
+    private long population;
     private double condition; // условия обитания 0 - плохие; 1 - великолепные
     private boolean updated; // true, if the area has updated values
     private Time time; // when the area has updated last time
 
     public Area() {
-        population = 0.0;
+        population = 0;
         condition = 1.0;
         updated = true;
     }
 
     public String getForeground() {
-        int r = (int)(255 * (1 - population/MAX_POP));
-        int g = (int)(255 * condition);
+        int r = (int) (255 * (1 - population / MAX_POP));
+        int g = (int) (255 * condition);
         int b = 0;
 
         return String.format("rgb(%d,%d,%d)", r, g, b);
@@ -35,11 +34,11 @@ public class Area {
                 '}';
     }
 
-    public double getPopulation() {
+    public long getPopulation() {
         return population;
     }
 
-    public void setPopulation(double population) {
+    public void setPopulation(long population) {
         this.population = population;
         setUpdated();
     }

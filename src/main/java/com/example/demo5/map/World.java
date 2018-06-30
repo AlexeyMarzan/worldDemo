@@ -48,7 +48,7 @@ public class World {
                         process();
                     }
                 },
-                5000,100
+                5000, 100
         );
     }
 
@@ -57,24 +57,24 @@ public class World {
         List<Integer> latitudeTable = new ArrayList<>();
 
         int step = getGridSize();
-        int sp = step/2;
-        for (int i = -180+sp; i < 180; i+=step) {
+        int sp = step / 2;
+        for (int i = -180 + sp; i < 180; i += step) {
             longitudeTable.add(i);
         }
-        for (int j = -90+sp; j <  90-sp; j += step) {
+        for (int j = -90 + sp; j < 90 - sp; j += step) {
             latitudeTable.add(j);
         }
 
         cells = ArrayTable.create(longitudeTable, latitudeTable);
 
-        for (Integer longitude: cells.rowKeySet()) {
-            for (Integer latitude: cells.row(longitude).keySet()) {
+        for (Integer longitude : cells.rowKeySet()) {
+            for (Integer latitude : cells.row(longitude).keySet()) {
                 cells.put(longitude, latitude, new Area());
             }
         }
 
         //Moscow
-        findCell(37,55).setPopulation(MAX_POP);
+        findCell(37, 55).setPopulation(MAX_POP);
     }
 
     public Table<Integer, Integer, Area> getCells() {
@@ -86,17 +86,20 @@ public class World {
      */
     public void process() {
         time.increase();
-        if (time.getTime()%1000 == 0) {
-            System.out.println("=== TIME "+time.getTime() + " ===");
+        if (time.getTime() % 1000 == 0) {
+            System.out.println("=== TIME " + time.getTime() + " ===");
         }
 
-        final Point point = findLongLat((int) (Math.random()*360-180), (int) (Math.random()*180-90));
+        final Point point = findLongLat(
+                Math.round((Math.random() * 360 - 180)),
+                Math.round((Math.random() * 180 - 90)));
+
         // loop neighbours
         double population = 0;
         int areaCount = 0;
         Area c;
-        for (int i = -1, longitude = point.getLongitude(); i<=1; i++,longitude+=gridSize) {
-            for (int j = -1, latitude = point.getLatitude(); j <= 1; j++, latitude+=gridSize ) {
+        for (int i = -1, longitude = point.getLongitude(); i <= 1; i++, longitude += gridSize) {
+            for (int j = -1, latitude = point.getLatitude(); j <= 1; j++, latitude += gridSize) {
                 c = findCell(longitude, latitude);
                 if (c != null) {
                     population += c.getPopulation();
@@ -108,11 +111,11 @@ public class World {
         }
         c = cells.get(point.getLongitude(), point.getLatitude());
 
-        population = population/areaCount*c.getCondition()*Population.getFertile();
+        population = population / areaCount * c.getCondition() * Population.getFertile();
         double condition = c.getCondition();
-        condition *= 1 - population/MAX_POP;
+        condition *= 1 - population / MAX_POP;
         c.setCondition(condition);
-        c.setPopulation(population);
+        c.setPopulation(Math.round(population));
         c.setTime(time);
     }
 
@@ -129,12 +132,12 @@ public class World {
      */
     public Point findLongLat(double longitude, double latitude) {
         Double minDist2 = null;
-        Integer minX=null, minY=null;
+        Integer minX = null, minY = null;
 
         // TODO: write better search to avoid O(n^2) complexity.
-        for (Integer x: cells.rowKeySet()) {
-            for (Integer y: cells.row(x).keySet()) {
-                double dist2 = (longitude-x)*(longitude-x)+(latitude-y)*(latitude-y);
+        for (Integer x : cells.rowKeySet()) {
+            for (Integer y : cells.row(x).keySet()) {
+                double dist2 = (longitude - x) * (longitude - x) + (latitude - y) * (latitude - y);
                 if (minDist2 == null || minDist2 > dist2) {
                     minDist2 = dist2;
                     minX = x;

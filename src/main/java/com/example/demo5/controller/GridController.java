@@ -22,20 +22,20 @@ public class GridController {
     public GeoJsonObject getGrid() {
         FeatureCollection mpl = new FeatureCollection();
         double step = map.getGridSize();
-        double sp = step/2;
-        for (double i = -180+sp; i < 180; i+=step) {
-            for (double j = -90+sp; j <  90-sp; j += step) {
+        double sp = step / 2;
+        for (double i = -180 + sp; i < 180; i += step) {
+            for (double j = -90 + sp; j < 90 - sp; j += step) {
                 Feature f = new Feature();
                 Map<String, Object> properties = new HashMap<>();
                 properties.put("longitude", i);
                 properties.put("latitude", j);
                 f.setProperties(properties);
                 f.setGeometry(new Polygon(
-                        new LngLatAlt(i+sp, j+sp),
-                        new LngLatAlt(i+sp, j-sp),
-                        new LngLatAlt(i-sp, j-sp),
-                        new LngLatAlt(i-sp, j+sp),
-                        new LngLatAlt(i+sp, j+sp)));
+                        new LngLatAlt(i + sp, j + sp),
+                        new LngLatAlt(i + sp, j - sp),
+                        new LngLatAlt(i - sp, j - sp),
+                        new LngLatAlt(i - sp, j + sp),
+                        new LngLatAlt(i + sp, j + sp)));
                 mpl.add(f);
             }
         }
