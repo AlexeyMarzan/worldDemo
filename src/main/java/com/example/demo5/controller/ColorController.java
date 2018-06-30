@@ -2,6 +2,8 @@ package com.example.demo5.controller;
 
 import com.example.demo5.dto.AreaDTO;
 import com.example.demo5.map.Area;
+import com.example.demo5.map.Habitat;
+import com.example.demo5.map.Point;
 import com.example.demo5.map.World;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -17,24 +19,23 @@ import java.util.List;
 @RestController
 public class ColorController {
     @Autowired
-    private World map;
+    private World world;
 
     @RequestMapping(method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
     public Serializable getColorMap() {
         List<AreaDTO> list = new ArrayList<>();
-        for (Integer longitude : map.getCells().rowKeySet()) {
-            for (Integer latitude : map.getCells().row(longitude).keySet()) {
+        if (world.hasChildren())
+            for (Habitat area : world.getChildren()) {
                 try {
-                    AreaDTO cell = new AreaDTO(map.getCells().get(longitude, latitude));
-                    cell.setLatitude(latitude);
-                    cell.setLongitude(longitude);
+                    AreaDTO cell = new AreaDTO((Area) area);
+                    Point point = (Point) world.findLocation(area);
+                    cell.setLatitude(point.getLatitude());
+                    cell.setLongitude(point.getLongitude());
                     list.add(cell);
                 } catch (Exception e) {
-                    System.out.println("Problem getting cell[" + longitude + "," + latitude + "]");
+                    System.out.println("Problem getting area " + area);
                 }
             }
-
-        }
 
         return list.toArray();
     }
@@ -42,22 +43,22 @@ public class ColorController {
     @RequestMapping(path = "/updates", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
     public Serializable getColorMapUpdates() {
         List<AreaDTO> list = new ArrayList<>();
-        for (Integer longitude : map.getCells().rowKeySet()) {
-            for (Integer latitude : map.getCells().row(longitude).keySet()) {
+        if (world.hasChildren())
+            for (Habitat h : world.getChildren()) {
                 try {
-                    Area area = map.getCells().get(longitude, latitude);
+                    Area area = (Area) h;
                     if (area.isUpdated()) {
                         AreaDTO cell = new AreaDTO(area);
-                        cell.setLatitude(latitude);
-                        cell.setLongitude(longitude);
+                        Point point = (Point) world.findLocation(area);
+                        cell.setLatitude(point.getLatitude());
+                        cell.setLongitude(point.getLongitude());
                         list.add(cell);
                         area.clearUpdated();
                     }
                 } catch (Exception e) {
-                    System.out.println("Problem getting cell[" + longitude + "," + latitude + "]");
+                    System.out.println("Problem getting area " + h);
                 }
             }
-        }
 
         return list.toArray();
     }

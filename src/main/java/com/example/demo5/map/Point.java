@@ -1,6 +1,6 @@
 package com.example.demo5.map;
 
-public class Point {
+public class Point implements Location {
     private final int longitude;
     private final int latitude;
 
@@ -15,5 +15,14 @@ public class Point {
 
     public Integer getLatitude() {
         return latitude;
+    }
+
+    @Override
+    public String toString() {
+        final StringBuffer sb = new StringBuffer("Point{");
+        sb.append("longitude=").append(longitude);
+        sb.append(", latitude=").append(latitude);
+        sb.append('}');
+        return sb.toString();
     }
 }

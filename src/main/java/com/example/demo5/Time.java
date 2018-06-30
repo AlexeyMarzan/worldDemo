@@ -8,10 +8,10 @@ public class Time {
     }
 
     public Time(Time time) {
-        this.time = time.getTime();
+        this.time = time.get();
     }
 
-    public long getTime() {
+    public long get() {
         return time;
     }
 
@@ -21,5 +21,10 @@ public class Time {
 
     public void increase() {
         time++;
+    }
+
+    @Override
+    public String toString() {
+        return Long.toString(time);
     }
 }
