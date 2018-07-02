@@ -45,9 +45,9 @@ public class World implements Habitat {
         initCells();
         if (timer != null) {
             timer.cancel();
-        } else {
-            this.timer = new Timer();
         }
+
+        this.timer = new Timer();
         final World w = this;
         timer.scheduleAtFixedRate(
                 new java.util.TimerTask() {
@@ -65,8 +65,8 @@ public class World implements Habitat {
         reverseCells = new HashMap<>();
         int step = getGridSize();
         int sp = step / 2;
-        for (int longitude = -180 + sp; longitude < 180; longitude += step) {
-            for (int latitude = -90 + sp; latitude < 90 - sp; latitude += step) {
+        for (int longitude = -180; longitude < 180; longitude += step) {
+            for (int latitude = -90 + sp; latitude < 90; latitude += step) {
                 Area area = new Area();
                 Point point = new Point(longitude, latitude);
                 cells.put(point, area);

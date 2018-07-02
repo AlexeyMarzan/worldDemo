@@ -4,16 +4,16 @@ public class Point implements Location {
     private final int longitude;
     private final int latitude;
 
-    public Point(Integer longitude, Integer latitude) {
+    public Point(int longitude, int latitude) {
         this.longitude = longitude;
         this.latitude = latitude;
     }
 
-    public Integer getLongitude() {
+    public int getLongitude() {
         return longitude;
     }
 
-    public Integer getLatitude() {
+    public int getLatitude() {
         return latitude;
     }
 

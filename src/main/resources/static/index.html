@@ -4,13 +4,10 @@
 </head>
 <body>
     <link rel="stylesheet" type="text/css" href="mystyles.css" media="screen" />
-    <div id='js-rotation-example'></div>
-
     <script src='https://code.jquery.com/jquery-3.3.1.min.js'></script>
     <script src="http://d3js.org/d3.v5.min.js"></script>
     <script src="http://d3js.org/topojson.v0.min.js"></script>
     <script src="example.js"></script>
-
     <script>
         var orto = true;
         var width = $(window).width(),
@@ -27,7 +24,7 @@
 
         var path = d3.geoPath(projection);
 
-        var svg = d3.select("#js-rotation-example")
+        var svg = d3.select('body')
             .append("svg")
             .attr("width", width-20)
             .attr("height", height-20)
