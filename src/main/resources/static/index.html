@@ -65,6 +65,8 @@
                 .attr('class','geojson')
                 .attr('d', path);
 
+            updater('/map');
+
         });
 
 
@@ -77,8 +79,33 @@
 
         }, 100);
 
-        setInterval(function () {
-            d3.json('/map/updates').then(function (data) {
+        setInterval(updater('/map/updates'), 100);
+
+        // inspired by http://bl.ocks.org/KoGor/5994804
+        function started(d) {
+            console.log("STARTED ", d);
+
+            //Globe rotating
+
+            (function transition() {
+                d3.transition()
+                    .duration(1500)
+                    .tween("rotate", function() {
+                        var r = d3.interpolate(projection.rotate(), [-d.properties.longitude, -d.properties.latitude]);
+                        return function(t) {
+                            projection.rotate(r(t));
+                            svg.selectAll("path").attr("d", path);
+
+                            // setup lat, lo for rotation timer function
+                            lat = projection.rotate()[0];
+                            lo = projection.rotate()[1];
+                        };
+                    })
+            })();
+        }
+
+        function updater(request) {
+            d3.json(request).then(function (data) {
                 //console.log('MAP IN:', data);
                 svg.selectAll('.geojson')
                     .style('fill', function (d, i) {
@@ -113,29 +140,6 @@
                             .attr("d", path);
                     })
             });
-        }, 100);
-
-        // inspired by http://bl.ocks.org/KoGor/5994804
-        function started(d) {
-            console.log("STARTED ", d);
-
-            //Globe rotating
-
-            (function transition() {
-                d3.transition()
-                    .duration(1500)
-                    .tween("rotate", function() {
-                        var r = d3.interpolate(projection.rotate(), [-d.properties.longitude, -d.properties.latitude]);
-                        return function(t) {
-                            projection.rotate(r(t));
-                            svg.selectAll("path").attr("d", path);
-
-                            // setup lat, lo for rotation timer function
-                            lat = projection.rotate()[0];
-                            lo = projection.rotate()[1];
-                        };
-                    })
-            })();
         }
 
     </script>
