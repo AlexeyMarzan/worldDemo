@@ -20,9 +20,9 @@ public class Area implements Habitat {
     }
 
     public String getForeground() {
-        int r = (int) (255 * (1 - population.value() / MAX_POP));
-        int g = (int) (255 * condition);
-        int b = 0;
+        long r = Math.round(255.0 * population.value() / MAX_POP);
+        long g = Math.round(255.0 * condition);
+        long b = 0;
 
         return String.format("rgb(%d,%d,%d)", r, g, b);
     }

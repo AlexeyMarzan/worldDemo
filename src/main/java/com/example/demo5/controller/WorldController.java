@@ -12,7 +12,11 @@ import org.springframework.web.servlet.view.RedirectView;
 @RestController
 public class WorldController {
     @Autowired
-    World world;
+    private World world;
+
+    public WorldController(World world) {
+        this.world = world;
+    }
 
     @RequestMapping(path = "/{grid}", method = RequestMethod.GET)
     public RedirectView setWorld(@PathVariable("grid") int grid) {

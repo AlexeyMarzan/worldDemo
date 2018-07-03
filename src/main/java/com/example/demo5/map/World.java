@@ -6,10 +6,7 @@ import com.example.demo5.process.WorldProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Timer;
+import java.util.*;
 
 import static com.example.demo5.population.Population.MAX_POP;
 
@@ -42,7 +39,7 @@ public class World implements Habitat {
         this.gridSize = gridSize;
         this.population = new Population(this);
         this.time = new Time();
-        initCells();
+        initAreas();
         if (timer != null) {
             timer.cancel();
         }
@@ -60,7 +57,7 @@ public class World implements Habitat {
         );
     }
 
-    private void initCells() {
+    private void initAreas() {
         cells = new HashMap<>();
         reverseCells = new HashMap<>();
         int step = getGridSize();
@@ -86,17 +83,22 @@ public class World implements Habitat {
     }
 
     /**
+     * Find nearest area specified point belongs to.
+     */
+    public Area findCell(Point p) {
+        return (Area) cells.get(findLongLat(p.getLongitude(), p.getLatitude()));
+    }
+
+    /**
      * Find nearest area coordinates specified point belongs to.
      */
     public Point findLongLat(double longitude, double latitude) {
         Double minDist2 = null;
         Point point = null;
-
+        Point source = new Point(longitude, latitude);
         // TODO: write better search to avoid O(n) complexity.
         for (Point p : cells.keySet()) {
-            double x = p.getLongitude();
-            double y = p.getLatitude();
-            double dist2 = (longitude - x) * (longitude - x) + (latitude - y) * (latitude - y);
+            double dist2 = source.getDistance2(p);
             if (minDist2 == null || minDist2 > dist2) {
                 minDist2 = dist2;
                 point = p;
@@ -147,5 +149,22 @@ public class World implements Habitat {
     @Override
     public Population getPopulation() {
         return population;
+    }
+
+    /**
+     * Returns collection of areas located closer than specified distance to the habitat.
+     * The habitat itself is included to this collection.
+     */
+    public Collection<Habitat> getSiblings(Habitat habitat, double distance) {
+        Collection<Habitat> collection = new ArrayList<>();
+        Point areaLocation = reverseCells.get(habitat);
+        double d2 = distance * distance;
+        // TODO: write better search to avoid O(n) complexity.
+        for (Point p : cells.keySet()) {
+            if (areaLocation.getDistance2(p) <= d2) {
+                collection.add(cells.get(p));
+            }
+        }
+        return collection;
     }
 }

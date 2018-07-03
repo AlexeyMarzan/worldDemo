@@ -79,7 +79,7 @@
 
         }, 100);
 
-        setInterval(updater('/map/updates'), 100);
+        setInterval(function () { updater('/map/updates'); }, 100);
 
         // inspired by http://bl.ocks.org/KoGor/5994804
         function started(d) {
@@ -112,7 +112,7 @@
                         //console.log('MAP:', i, d);
                         var found = null;
                         data.forEach(function(entry) {
-                            if (Math.abs(entry.longitude-d.properties.longitude)<4 && Math.abs(entry.latitude-d.properties.latitude)<4) // TODO Учесть gridSize
+                            if (Math.abs(entry.longitude-d.properties.longitude)<1 && Math.abs(entry.latitude-d.properties.latitude)<1) // TODO Учесть gridSize
                                 //console.log("MATCH: ", i,d,entry)
                                 found = entry.foreground;
                         });

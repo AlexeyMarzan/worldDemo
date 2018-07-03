@@ -21,6 +21,10 @@ public class ColorController {
     @Autowired
     private World world;
 
+    public ColorController(World world) {
+        this.world = world;
+    }
+
     @RequestMapping(method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
     public Serializable getColorMap() {
         List<AreaDTO> list = new ArrayList<>();
@@ -29,8 +33,8 @@ public class ColorController {
                 try {
                     AreaDTO cell = new AreaDTO((Area) area);
                     Point point = (Point) world.findLocation(area);
-                    cell.setLatitude(point.getLatitude());
-                    cell.setLongitude(point.getLongitude());
+                    cell.setLatitude((int) Math.round(point.getLatitude()));
+                    cell.setLongitude((int) Math.round(point.getLongitude()));
                     list.add(cell);
                 } catch (Exception e) {
                     System.out.println("Problem getting area " + area);
@@ -50,8 +54,8 @@ public class ColorController {
                     if (area.isUpdated()) {
                         AreaDTO cell = new AreaDTO(area);
                         Point point = (Point) world.findLocation(area);
-                        cell.setLatitude(point.getLatitude());
-                        cell.setLongitude(point.getLongitude());
+                        cell.setLatitude((int) Math.round(point.getLatitude()));
+                        cell.setLongitude((int) Math.round(point.getLongitude()));
                         list.add(cell);
                         area.clearUpdated();
                     }

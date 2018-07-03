@@ -1,6 +1,7 @@
 package com.example.demo5.process;
 
 import com.example.demo5.map.Area;
+import com.example.demo5.map.Habitat;
 import com.example.demo5.map.Point;
 import com.example.demo5.map.World;
 import com.example.demo5.population.Population;
@@ -8,6 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Singleton;
+import java.util.Collection;
+
+import static com.example.demo5.population.Population.MAX_POP;
 
 @Singleton
 @Component
@@ -22,34 +26,26 @@ public class WorldProcessor implements Processor<World> {
         }
 
         final Point point = world.findLongLat(
-                Math.round((Math.random() - 0.5) * 360),
-                Math.round((Math.random() - 0.5) * 180));
+                (Math.random() - 0.5) * 360,
+                (Math.random() - 0.5) * 180);
 
         // loop neighbours
         double population = 0;
         int areaCount = 0;
-        Area area = null;
-        for (int i = -1, longitude = point.getLongitude(); i <= 1; i++, longitude += world.getGridSize()) {
-            for (int j = -1, latitude = point.getLatitude(); j <= 1; j++, latitude += world.getGridSize()) {
-                Area c = world.findCell(longitude, latitude);
-                if (c != null) {
-                    if (i == 0 && j == 0) {
-                        area = c;
-                    }
-                    population += c.getPopulation().value();
-                    areaCount++;
-                } else {
-                    System.out.println("No CELL[" + longitude + "," + latitude + "]");
-                }
+        Area area = world.findCell(point);
+        Collection<Habitat> neighbours = world.getSiblings(area, world.getGridSize());
+        if (neighbours != null) {
+            for (Habitat h : neighbours) {
+                Area c = (Area) h;
+                population += c.getPopulation().value();
+                areaCount++;
             }
         }
 
-        if (area != null) {
-            population = population / areaCount * area.getCondition() * Population.getFertile();
-            area.setPopulation(Math.round(population));
-            areaProcessor.process(area);
-            area.setTime(world.getTime());
-        }
+        population = population / areaCount * area.getCondition() * Population.getFertile();
+        area.setPopulation(Math.round(Math.min(population, MAX_POP)));
+        areaProcessor.process(area);
+        area.setTime(world.getTime());
 
         world.getTime().increase();
     }
