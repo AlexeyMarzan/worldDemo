@@ -1,5 +1,7 @@
 package com.example.demo5.process;
 
-public interface Processor<T> {
-    void process(T t);
+import com.example.demo5.map.Habitat;
+
+public interface Processor<T extends Habitat> {
+    void process(final T t);
 }

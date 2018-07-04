@@ -1,7 +1,6 @@
 package com.example.demo5.controller;
 
 import com.example.demo5.map.Area;
-import com.example.demo5.map.Habitat;
 import com.example.demo5.map.Point;
 import com.example.demo5.map.World;
 import org.geojson.*;
@@ -41,11 +40,10 @@ public class GridController {
         double sqrt2 = sp * Math.sqrt(2);
         FeatureCollection mpl = new FeatureCollection();
         if (map.hasChildren()) {
-            for (Habitat h : map.getChildren()) {
+            for (Area h : map.getChildren()) {
                 try {
                     Feature f = new Feature();
-                    Area area = (Area) h;
-                    Point point = (Point) map.findLocation(area);
+                    Point point = map.findLocation(h);
                     double longitude = point.getLongitude();
                     double latitude = point.getLatitude();
 
@@ -64,7 +62,7 @@ public class GridController {
                     f.setGeometry(new Polygon(list));
                     mpl.add(f);
                 } catch (Exception e) {
-                    System.out.println("Problem getting area " + h);
+                    System.out.println("getGrid: Problem getting area " + h);
                 }
             }
         }

@@ -18,9 +18,9 @@ public class AreaProcessor implements Processor<Area> {
      * Single step on area.
      */
     @Override
-    public void process(Area area) {
+    public void process(final Area area) {
         double condition = area.getCondition();
-        condition *= 1 - area.getPopulation().value() / MAX_POP;
+        condition *= 1 - area.getPopulation() / MAX_POP;
         area.setCondition(condition);
     }
 }

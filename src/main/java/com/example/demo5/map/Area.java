@@ -1,49 +1,54 @@
 package com.example.demo5.map;
 
 import com.example.demo5.Time;
-import com.example.demo5.population.Population;
-
-import java.util.Collection;
+import com.example.demo5.process.AreaProcessor;
+import com.example.demo5.process.Processor;
+import com.google.common.base.MoreObjects;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import static com.example.demo5.population.Population.MAX_POP;
 
 public class Area implements Habitat {
-    private Population population;
+    private long population;
     private double condition; // условия обитания 0 - плохие; 1 - великолепные
     private boolean updated; // true, if the area has updated values
     private Time time; // when the area has updated last time
 
+    @Autowired
+    private AreaProcessor processor;
+
     public Area() {
-        population = new Population(this);
+        population = 0;
+        time = new Time();
         condition = 1.0;
         updated = true;
     }
 
     public String getForeground() {
-        long r = Math.round(255.0 * population.value() / MAX_POP);
-        long g = Math.round(255.0 * condition);
+        long r = Math.round(255.0 * getPopulation() / MAX_POP);
+        long g = Math.round(255.0 * getCondition());
         long b = 0;
 
         return String.format("rgb(%d,%d,%d)", r, g, b);
     }
 
-    @Override
-    public String toString() {
-        return "Area{" +
-                "population=" + population +
-                ", condition=" + condition +
-                ", updated=" + updated +
-                ", time=" + time +
-                '}';
-    }
-
-    public Population getPopulation() {
+    public long getPopulation() {
         return population;
     }
 
+    @Override
     public void setPopulation(long population) {
-        this.population.setPopulation(population);
+        this.population = population;
         setUpdated();
+    }
+
+    @Override
+    public void process() {
+        try {
+            getProcessor().process(this);
+        } catch (Exception e) {
+            throw e;
+        }
     }
 
     public double getCondition() {
@@ -75,23 +80,18 @@ public class Area implements Habitat {
         this.time = new Time(time);
     }
 
-    @Override
-    public Collection<Habitat> getChildren() {
-        return null;
+    public Processor getProcessor() {
+        return processor;
     }
 
     @Override
-    public boolean hasChildren() {
-        return false;
-    }
-
-    @Override
-    public Habitat findChild(Location location) {
-        return null;
-    }
-
-    @Override
-    public Location findLocation(Habitat area) {
-        return null;
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("population", population)
+                .add("condition", condition)
+                .add("updated", updated)
+                .add("time", time)
+                .add("processor", processor)
+                .toString();
     }
 }

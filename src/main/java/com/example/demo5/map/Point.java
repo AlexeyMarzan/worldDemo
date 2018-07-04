@@ -1,6 +1,6 @@
 package com.example.demo5.map;
 
-public class Point implements Location {
+public class Point implements Location<Point> {
     private final double longitude;
     private final double latitude;
 
@@ -34,6 +34,7 @@ public class Point implements Location {
         return (x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2);
     }
 
+    @Override
     public double getDistance2(Point p) {
         return (getDistance2(this, p));
     }

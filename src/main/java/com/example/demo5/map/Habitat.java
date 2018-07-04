@@ -1,9 +1,5 @@
 package com.example.demo5.map;
 
-import com.example.demo5.population.Population;
-
-import java.util.Collection;
-
 /**
  * Interface to any object that represents some environment to life forms.
  * <p>
@@ -14,25 +10,11 @@ import java.util.Collection;
  */
 public interface Habitat {
     /**
-     * @return collection of children or null if there are none.
-     */
-    Collection<Habitat> getChildren();
-
-    boolean hasChildren();
-
-    /**
-     * @return habitat that belongs to the specified location, or null if not found
-     */
-    Habitat findChild(Location location);
-
-    /**
-     * @return location assigned to the specified area.
-     */
-    Location findLocation(Habitat area);
-
-    /**
      * @return population of this habitat
      */
-    Population getPopulation();
+    long getPopulation();
 
+    void setPopulation(long population);
+
+    void process();
 }

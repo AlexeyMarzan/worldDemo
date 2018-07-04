@@ -1,10 +1,7 @@
 package com.example.demo5.controller;
 
 import com.example.demo5.dto.AreaDTO;
-import com.example.demo5.map.Area;
-import com.example.demo5.map.Habitat;
-import com.example.demo5.map.Point;
-import com.example.demo5.map.World;
+import com.example.demo5.map.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -29,15 +26,15 @@ public class ColorController {
     public Serializable getColorMap() {
         List<AreaDTO> list = new ArrayList<>();
         if (world.hasChildren())
-            for (Habitat area : world.getChildren()) {
+            for (Area area : world.getChildren()) {
                 try {
-                    AreaDTO cell = new AreaDTO((Area) area);
-                    Point point = (Point) world.findLocation(area);
+                    AreaDTO cell = new AreaDTO(area);
+                    Point point = world.findLocation(area);
                     cell.setLatitude((int) Math.round(point.getLatitude()));
                     cell.setLongitude((int) Math.round(point.getLongitude()));
                     list.add(cell);
                 } catch (Exception e) {
-                    System.out.println("Problem getting area " + area);
+                    System.out.println("getColorMap: Problem getting area " + area);
                 }
             }
 
@@ -48,19 +45,18 @@ public class ColorController {
     public Serializable getColorMapUpdates() {
         List<AreaDTO> list = new ArrayList<>();
         if (world.hasChildren())
-            for (Habitat h : world.getChildren()) {
+            for (Area area : world.getChildren()) {
                 try {
-                    Area area = (Area) h;
                     if (area.isUpdated()) {
                         AreaDTO cell = new AreaDTO(area);
-                        Point point = (Point) world.findLocation(area);
+                        Point point = world.findLocation(area);
                         cell.setLatitude((int) Math.round(point.getLatitude()));
                         cell.setLongitude((int) Math.round(point.getLongitude()));
                         list.add(cell);
                         area.clearUpdated();
                     }
                 } catch (Exception e) {
-                    System.out.println("Problem getting area " + h);
+                    System.out.println("getColorMapUpdates: Problem getting area " + area);
                 }
             }
 
