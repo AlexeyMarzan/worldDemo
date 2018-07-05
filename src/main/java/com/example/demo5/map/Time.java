@@ -1,4 +1,4 @@
-package com.example.demo5;
+package com.example.demo5.map;
 
 public class Time {
     private long time;

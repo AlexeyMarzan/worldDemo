@@ -1,9 +1,6 @@
 package com.example.demo5.map;
 
-import com.example.demo5.process.AreaSetProcessor;
-import com.example.demo5.process.Processor;
 import com.google.common.base.MoreObjects;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -18,8 +15,6 @@ import java.util.Map;
  */
 public abstract class AreaSet<T extends Habitat, L extends Location> extends Area implements HabitatSet<T, L> {
     private int gridSize; // размер ячеек в градусах
-    @Autowired
-    private AreaSetProcessor processor;
 
     public AreaSet(int gridSize) {
         init(gridSize);
@@ -29,8 +24,8 @@ public abstract class AreaSet<T extends Habitat, L extends Location> extends Are
         return gridSize;
     }
 
-    protected Map<L, T> cells;
-    protected Map<T, L> reverseCells; // allows fast search for getLocation method
+    private Map<L, T> cells;
+    private Map<T, L> reverseCells; // allows fast search for getLocation method
 
 
     @Override
@@ -129,7 +124,6 @@ public abstract class AreaSet<T extends Habitat, L extends Location> extends Are
         return p+population;
     }
 
-
     @Override
     public double getCondition() {
         double condition = 0;
@@ -154,14 +148,11 @@ public abstract class AreaSet<T extends Habitat, L extends Location> extends Are
      */
     abstract void initAreas();
 
-    abstract public Processor getProcessor();
-
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                .add("gridSize", gridSize)
-                .add("processor", processor)
-                .add("cells.size", cells.size())
+                .add("gridSize", getGridSize())
+                .add("cells.size", getChildren().size())
                 .add("super", super.toString())
                 .toString();
     }

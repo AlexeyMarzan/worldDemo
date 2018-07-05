@@ -1,20 +1,16 @@
 package com.example.demo5.map;
 
-import com.example.demo5.process.Processor;
-import com.example.demo5.process.WorldProcessor;
+import com.example.demo5.population.Population;
 import com.google.common.base.MoreObjects;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.Collection;
 import java.util.Timer;
 
 import static com.example.demo5.population.Population.MAX_POP;
 
 @Component
 public class World extends AreaSet<Area, Point> {
-    @Autowired
-    private WorldProcessor processor;
-
     private Timer timer;
 
     public World() {
@@ -49,7 +45,7 @@ public class World extends AreaSet<Area, Point> {
         int sp = step / 2;
         for (int longitude = -180; longitude < 180; longitude += step) {
             for (int latitude = -90 + sp; latitude < 90; latitude += step) {
-                AreaSet<Habitat, PointXY> area = new AreaSetImpl(1);
+                AreaSet area = new AreaSetImpl(1);
                 area.initAreas();
                 addChild(area, new Point(longitude, latitude));
             }
@@ -62,7 +58,6 @@ public class World extends AreaSet<Area, Point> {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                .add("processor", getProcessor())
                 .add("timer", getTime())
                 .add("population", getPopulation())
                 .add("super", super.toString())
@@ -74,7 +69,32 @@ public class World extends AreaSet<Area, Point> {
     }
 
     @Override
-    public Processor getProcessor() {
-        return processor;
+    public void process() {
+        if (getTime().get() % 1000 == 0) {
+            System.out.println(getInfo());
+        }
+
+        Point randomPoint = new Point(
+                (Math.random() - 0.5) * 360,
+                (Math.random() - 0.5) * 180);
+
+        // loop neighbours
+        double population = 0;
+        int areaCount = 0;
+        Area area = findNearestChild(randomPoint);
+        Collection<Area> neighbours = getNeighbours(area, getGridSize());
+        if (neighbours != null) {
+            for (Habitat h : neighbours) {
+                population += h.getPopulation();
+                areaCount++;
+            }
+        }
+
+        population = population / areaCount * area.getCondition() * Population.fertile;
+        area.setPopulation(Math.round(Math.min(population, MAX_POP)));
+        area.process();
+        area.setTime(getTime());
+
+        getTime().increase();
     }
 }
