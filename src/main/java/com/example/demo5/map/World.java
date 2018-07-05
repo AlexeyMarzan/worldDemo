@@ -58,8 +58,6 @@ public class World extends AreaSet<Area, Point> {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                .add("timer", getTime())
-                .add("population", getPopulation())
                 .add("super", super.toString())
                 .toString();
     }

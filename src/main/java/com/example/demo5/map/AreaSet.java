@@ -149,6 +149,16 @@ public abstract class AreaSet<T extends Habitat, L extends Location> extends Are
     abstract void initAreas();
 
     @Override
+    public void process() {
+        if (hasChildren()) {
+            for (T h : getChildren()) {
+                h.process();
+            }
+        } else
+            System.out.println("Empty Processing " + this);
+    }
+
+    @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
                 .add("gridSize", getGridSize())
