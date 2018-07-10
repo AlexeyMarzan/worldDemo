@@ -16,5 +16,13 @@ public interface Habitat {
 
     void setPopulation(long population);
 
+    void addPopulation(long population);
+
     void process();
+
+    boolean isUpdated();
+
+    void clearUpdated();
+
+    Object getCondition(Object key);
 }

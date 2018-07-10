@@ -2,42 +2,30 @@ package com.example.demo5.population;
 
 import com.google.common.base.MoreObjects;
 
-import java.util.ArrayDeque;
-import java.util.Deque;
-
 /**
- * Allows to store population value and keep historical records of previous values.
+ * Allows to store population value
  */
 public class Population {
     public static final double fertile = 2.0;
-    public static final long MAX_POP = 17100000;
+    public static final double trash_utilization = 0.5;
+    public static final long MAX_POP = 1710000000;
+    private long population;
 
-    private static final int dequeSize = 2; // size of the history
-
-    private Deque<Long> deque;
-
-    public Population(long population) {
-        deque = new ArrayDeque<>(dequeSize);
-        setPopulation(population);
+    public Population() {
     }
 
-    public long getPopulation() {
-        return deque.getLast();
+    public long get() {
+        return population;
     }
 
-    public void setPopulation(long value) {
-        // remove oldest record if needed
-        if (deque.size() ==  dequeSize) {
-            deque.removeFirst();
-        }
-
-        deque.add(value);
+    public void set(long value) {
+        population = value;
     }
 
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                .add("deque", deque)
+                .add("population", population)
                 .toString();
     }
 }

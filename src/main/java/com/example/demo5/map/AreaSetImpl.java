@@ -12,4 +12,9 @@ public class AreaSetImpl extends AreaSet<Area, PointXY> {
                 addChild(new Area(), new PointXY(i, j));
             }
     }
+
+    @Override
+    public String toString() {
+        return super.toString();
+    }
 }

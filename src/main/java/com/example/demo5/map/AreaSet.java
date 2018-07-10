@@ -7,14 +7,17 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.example.demo5.population.Population.MAX_POP;
+
 /**
  * Abstract class that inherits abilities of an area and in addition supports children habitats.
  *
  * @param <T> defines type of children habitats
  * @param <L> defines metric used to order children
  */
-public abstract class AreaSet<T extends Habitat, L extends Location> extends Area implements HabitatSet<T, L> {
+public abstract class AreaSet<T extends Habitat, L extends Location> extends AbstractArea implements HabitatSet<T, L> {
     private int gridSize; // размер ячеек в градусах
+    private String id;
 
     public AreaSet(int gridSize) {
         init(gridSize);
@@ -63,14 +66,14 @@ public abstract class AreaSet<T extends Habitat, L extends Location> extends Are
     @Override
     public Collection<T> getNeighbours(T habitat, double distance) {
         Collection<T> collection = new ArrayList<>();
-        L areaLocation = reverseCells.get(habitat);
+        L location = reverseCells.get(habitat);
         double d2 = distance * distance;
         // TODO: write better search to avoid O(n) complexity.
-        for (L p : cells.keySet()) {
-            if (areaLocation.getDistance2(p) <= d2) {
+        cells.forEach((p, a) -> {
+            if (location.getDistance2(p) <= d2) {
                 collection.add(cells.get(p));
             }
-        }
+        });
         return collection;
     }
 
@@ -91,56 +94,24 @@ public abstract class AreaSet<T extends Habitat, L extends Location> extends Are
 
     @Override
     public void setPopulation(long population) {
-        if (!hasChildren()) {
-            super.setPopulation(population);
-        }
+        final long cellPopulation = population / cells.size();
+        cells.values().forEach(area -> area.setPopulation(cellPopulation));
+    }
 
-        population /= cells.size();
-        for (L p : cells.keySet()) {
-            try {
-                T a = cells.get(p);
-                a.setPopulation(population);
-            } catch (Exception e) {
-                System.out.println("getCondition: Problem getting area at " + p);
-            }
-        }
+    /**
+     * Adds equal population across every sub-areas
+     *
+     * @param population
+     */
+    @Override
+    public void addPopulation(long population) {
+        final long cellPopulation = population / cells.size();
+        getChildren().forEach(area -> area.addPopulation(cellPopulation));
     }
 
     @Override
     public long getPopulation() {
-        long population = 0;
-        long p = super.getPopulation();
-        if (hasChildren()) {
-            for (L location : cells.keySet()) {
-                try {
-                    Habitat a = cells.get(location);
-                    population += a.getPopulation();
-                } catch (Exception e) {
-                    System.out.println("getPopulation: Problem getting area at " + p);
-                }
-            }
-        }
-
-        return p+population;
-    }
-
-    @Override
-    public double getCondition() {
-        double condition = 0;
-        if (!hasChildren()) return super.getCondition();
-
-        int areaCount = 0;
-        for (L p : cells.keySet()) {
-            try {
-                Area a = (Area) cells.get(p);
-                condition += a.getCondition();
-                areaCount++;
-            } catch (Exception e) {
-                System.out.println("getCondition: Problem getting area at " + p);
-            }
-        }
-
-        return condition / areaCount;
+        return getChildren().stream().mapToLong(Habitat::getPopulation).sum();
     }
 
     /**
@@ -150,20 +121,51 @@ public abstract class AreaSet<T extends Habitat, L extends Location> extends Are
 
     @Override
     public void process() {
-        if (hasChildren()) {
-            for (T h : getChildren()) {
-                h.process();
-            }
-        } else
-            System.out.println("Empty Processing " + this);
+        getChildren().forEach(Habitat::process);
     }
 
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
+                .add("id", id)
                 .add("gridSize", getGridSize())
                 .add("cells.size", getChildren().size())
-                .add("super", super.toString())
+                .add("cells", cells)
                 .toString();
+    }
+
+    @Override
+    public Double getCondition(Object key) {
+        return getChildren().stream().mapToDouble(h -> (Double) h.getCondition(key)).sum();
+    }
+
+    public String getForeground() {
+        if (!hasChildren())
+            return "none";
+
+        long r = Math.round(255.0 * getPopulation() / MAX_POP);
+        long g = Math.round(255.0 * getCondition(ELEMENT.FOOD) / getChildren().size() / MAX_FOOD);
+        long b = Math.round(255.0 * getCondition(ELEMENT.TRASH) / getChildren().size() / MAX_TRASH);
+
+        return String.format("rgb(%d,%d,%d)", r, g, b);
+    }
+
+    @Override
+    public boolean isUpdated() {
+        if (hasChildren()) {
+            for (T a : getChildren()) {
+                if (a.isUpdated()) return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public void clearUpdated() {
+        if (hasChildren()) getChildren().forEach(Habitat::clearUpdated);
+    }
+
+    protected void setId(String id) {
+        this.id = id;
     }
 }

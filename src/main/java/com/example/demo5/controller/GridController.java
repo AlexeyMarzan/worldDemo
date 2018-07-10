@@ -1,10 +1,10 @@
 package com.example.demo5.controller;
 
-import com.example.demo5.map.Area;
 import com.example.demo5.map.Point;
 import com.example.demo5.map.World;
 import org.geojson.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -23,11 +23,8 @@ import java.util.Map;
 public class GridController {
     private static final int numCorners = 4;
     @Autowired
+    @Qualifier("RealWorld")
     private World map;
-
-    public GridController(World map) {
-        this.map = map;
-    }
 
     /**
      * Called once per world to produce grid as GeoJSON object. The grid is built using locations of world children
@@ -39,8 +36,7 @@ public class GridController {
         double sp = map.getGridSize() / 2;
         double sqrt2 = sp * Math.sqrt(2);
         FeatureCollection mpl = new FeatureCollection();
-        if (map.hasChildren()) {
-            for (Area h : map.getChildren()) {
+        map.getChildren().forEach(h -> {
                 try {
                     Feature f = new Feature();
                     Point point = map.findLocation(h);
@@ -64,8 +60,7 @@ public class GridController {
                 } catch (Exception e) {
                     System.out.println("getGrid: Problem getting area " + h);
                 }
-            }
-        }
+            });
         return mpl;
     }
 }

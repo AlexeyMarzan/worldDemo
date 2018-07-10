@@ -2,6 +2,7 @@ package com.example.demo5.controller;
 
 import com.example.demo5.map.World;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -12,11 +13,8 @@ import org.springframework.web.servlet.view.RedirectView;
 @RestController
 public class WorldController {
     @Autowired
+    @Qualifier("RealWorld")
     private World world;
-
-    public WorldController(World world) {
-        this.world = world;
-    }
 
     @RequestMapping(path = "/{grid}", method = RequestMethod.GET)
     public RedirectView setWorld(@PathVariable("grid") int grid) {

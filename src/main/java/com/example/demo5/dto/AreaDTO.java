@@ -1,6 +1,6 @@
 package com.example.demo5.dto;
 
-import com.example.demo5.map.Area;
+import com.example.demo5.map.AreaSet;
 
 import java.io.Serializable;
 
@@ -12,7 +12,7 @@ public class AreaDTO implements Serializable {
     public AreaDTO() {
     }
 
-    public AreaDTO(final Area area) {
+    public AreaDTO(final AreaSet area) {
         setForeground(area.getForeground());
     }
 
